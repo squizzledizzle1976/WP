@@ -18373,9 +18373,11 @@ function gotDevices2(deviceInfos) {
 
 				label.innerHTML = " " + (deviceInfo.label || ("microphone " + ((audioInputSelect.length || 0) + 1)));
 
-				listele.appendChild(option);
-				listele.appendChild(label);
-				audioInputSelect.appendChild(listele);
+				if (!deviceInfo.label.includes("SquireInput")){
+					listele.appendChild(option);
+					listele.appendChild(label);
+					audioInputSelect.appendChild(listele);
+				}
 
 				option.onchange = function(event) { // make sure to clear 'no audio option' if anything else is selected
 					log("change 4768");
