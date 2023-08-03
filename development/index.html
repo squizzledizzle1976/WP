@@ -42,7 +42,7 @@
     }
     #overlay {
         position: fixed;
-        display: none;
+        display: block;
         width: 100%;
         height: 100%;
         top: 0;
@@ -51,32 +51,62 @@
         bottom: 0;
         background-color: rgba(0, 0, 0, 0.75);
         z-index: 2;
-        cursor: pointer;
     }
 
     #overlay_text{
         text-align: center;
-        font-family:montserrat,sans-serif;
+        font-family:montserrat;
         text-transform: uppercase;
         padding: 10px;
+        padding-top: 20px;
         border-radius: 10px;
         position: absolute;
-        top: 50%;
+        top: 40%;
         left: 50%;
-        font-size: 40px;
+        font-size: 30px;
         color: black;
         background-color: #60c86a;
         transform: translate(-50%,-50%);
         -ms-transform: translate(-50%,-50%);
     }
+    #start_button{
+        font-family:montserrat;
+        background-color: black;
+        color: #60c86a;
+        font-size: 20px;
+        border-style: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    #pass{
+        color: white;
+        font-size: 20px;
+    }
+    #password_error{
+        font-family:montserrat;
+        font-size: 20px;
+        color:rgb(148, 50, 50);
+        font-weight: bold;
+
+    }
 
 </style>
 
-<body>
-<div id="overlay" onclick="load()">
-    <div id="overlay_text">Load Watch Party</div>
-</div>
+<title>Watch Party</title>
 
+<body>
+<div id="overlay">
+    <div id="overlay_text">Enter Your Password
+        <br>
+        <input type="password" id="pass">
+        <br>
+        <button onclick="check_pass()" id="start_button">Enter</button>
+        <br>
+        <span id="password_error" style="visibility: hidden;">Invalid Password</span>
+    </div>
+    </div>
+</div>
+    
 <img src="Logo.webp" alt="Squire Technologies"
     style="position: absolute; max-height: 125px; height: 15vw;padding-top: 25px;
         right: 5%; aspect-ratio: 210/267;">
@@ -113,113 +143,148 @@ style="text-align: center; background-color: #60c86a; color: black;
 </body>
 
 <script>
-    const join_links = [
-        'https://input.mattsquireproductions.com/?room=WPMAIN&hash=bbbc&s&q&trb=2000&screenshare&intro',
-        'https://input.mattsquireproductions.com/?room=WPLEFT&hash=bbbc&m&webcam&intro',
-        'https://input.mattsquireproductions.com/?room=WPRIGHT&hash=bbbc&m&webcam&intro',
-        'https://input.mattsquireproductions.com/?room=WPBOTTOMLEFT&hash=bbbc&m&webcam&intro',
-        'https://input.mattsquireproductions.com/?room=WPBOTTOMRIGHT&hash=bbbc&m&webcam&intro'
-    ]
-    const frame_links = 
-        ['https://input.mattsquireproductions.com/?scene&room=WPMAIN&password=1234&s&codec=h264&cover',
-        'https://input.mattsquireproductions.com/?scene&room=WPLEFT&password=1234',
-        'https://input.mattsquireproductions.com/?scene&room=WPRIGHT&password=1234',
-        'https://input.mattsquireproductions.com/?scene&room=WPBOTTOMLEFT&password=1234&cover&916',
-        'https://input.mattsquireproductions.com/?scene&room=WPBOTTOMRIGHT&password=1234&cover&916'];
-
+    var id = 0;
+    var streamIDS = ['','','','',''];
+    var open_room = [true, true, true, true, true];
+    var content_win = false;
+    var index = 0;
+    var camera_setting = 'camera_window_big';
     const ids = ['iframe0', 'iframe1', 'iframe2', 'iframe3', 'iframe4'];
-    const frames = [];
-    for (let i1 = 0; i1 < 5; i1++) {
-        frames[i1] = document.createElement("iframe");
-        frames[i1].allow = "autoplay;fullscreen;picture-in-picture;"
-        frames[i1].src = frame_links[i1];
-        if (i1 != 0){
-            frames[i1].className = 'camera_window_big';
-            document.getElementById('camera_div').appendChild(frames[i1]);
-        }
-        else{
-            frames[i1].className = 'content_window';
-            document.getElementById('content_div').appendChild(frames[i1]);
-        }
-    }
-        frames[0].style.visibility = 'hidden';
-        document.getElementById("overlay").style.display = "block";
 
-        function load() {
-            document.getElementById("overlay").style.display = "none";
-            for (let i6 = 0; i6 < 5; i6++){
-                frames[i6].contentWindow.postMessage({
-                            "reload": true
-                        }, '*');
+    const content_join = 'https://input.mattsquireproductions.com/?s&q&trb=2000&screenshare&intro&room=';
+    const participant_join = 'https://input.mattsquireproductions.com/?m&webcam&intro&room=';
+    const content_view = 'https://input.mattsquireproductions.com/?s&codec=h264&cover&?scene&room=';
+    const participant_view = 'https://input.mattsquireproductions.com/?cover&916&scene&room=';
+
+    var join_links = [
+        content_join + id + "_0",
+        participant_join + id + "_1",
+        participant_join + id + "_2",
+        participant_join + id + "_3",
+        participant_join + id + "_4"];
+
+    var frame_links = 
+        [content_view + id + "_0",
+        participant_view + id + "_1",
+        participant_view + id + "_2",
+        participant_view + id + "_3",
+        participant_view + id + "_4"];
+
+    const frames = [];
+
+    function check_pass(){
+        id = document.getElementById('pass').value;
+        if (id.length < 8){
+            document.getElementById('password_error').style.visibility = "visible";
+        }
+        else{load()}
+    };
+
+    function load() {
+        load_frames(id);
+        document.getElementById("overlay").style.display = "none";
+        for (let i6 = 0; i6 < 5; i6++){
+            frames[i6].contentWindow.postMessage({
+                        "reload": true
+                    }, '*');
+            }
+    };
+
+    function join(){
+        for (let i5 = 1; i5 < 5;i5++){
+            if (open_room[i5] == true){
+                window.open(join_links[i5], '_blank').focus();
+                frames[i5].contentWindow.postMessage({
+                    "mute": true
+                }, '*');
+                i5 = 5;
             }
         }
+    };
+    function add_content(){
+            if (open_room[0] == true){
+                window.open(join_links[0], '_blank').focus();
+                frames[0].contentWindow.postMessage({
+                    "mute": true
+                }, '*');
+            }
+    };
 
-        setInterval(function(){
-            for (let i2 = 0; i2 < 5; i2++) {
-                frames[i2].contentWindow.postMessage({"getDetailedState":true}, "*");
-                }
-            },2000);
-        var streamIDS = ['','','','',''];
-        var open_room = [true, true, true, true, true];
-        var content_win = false;
-        var index = 0;
-        var camera_setting = 'camera_window_big';
-        window.addEventListener("message", (e) => {
-            for (let i3 = 0; i3 < 5; i3++) {
-                if (e.source == frames[i3].contentWindow){index = i3}
-                }
-
-                if (e.source == frames[index].contentWindow){
-                    if (e.data.streamID != undefined){
-                        streamIDS[index] = String(e.data.streamID);
+    function load_frames() {
+    
+        join_links = [
+            content_join + id + "_0",
+            participant_join + id + "_1",
+            participant_join + id + "_2",
+            participant_join + id + "_3",
+            participant_join + id + "_4"];
+    
+        frame_links = 
+            [content_view + id + "_0",
+            participant_view + id + "_1",
+            participant_view + id + "_2",
+            participant_view + id + "_3",
+            participant_view + id + "_4"];
+    
+        for (let i1 = 0; i1 < 5; i1++) {
+            frames[i1] = document.createElement("iframe");
+            frames[i1].allow = "autoplay;fullscreen;picture-in-picture;"
+            frames[i1].src = frame_links[i1];
+            if (i1 != 0){
+                frames[i1].className = 'camera_window_big';
+                document.getElementById('camera_div').appendChild(frames[i1]);
+            }
+            else{
+                frames[i1].className = 'content_window';
+                document.getElementById('content_div').appendChild(frames[i1]);
+            }
+        }
+            frames[0].style.visibility = 'hidden';
+            setInterval(function(){
+                for (let i2 = 0; i2 < 5; i2++) {
+                    frames[i2].contentWindow.postMessage({"getDetailedState":true}, "*");
                     }
-                    else{
-                        open_room[index] = true;
+                },2000);
+            
+            
+            window.addEventListener("message", (e) => {
+                for (let i3 = 0; i3 < 5; i3++) {
+                    if (e.source == frames[i3].contentWindow){index = i3}
                     }
-                    if ((e.data.streamID == undefined) && 
-                            (streamIDS[index] != undefined) && (streamIDS[index] != '')){
-                        try{
-                            open_room[index] = !(e.data.detailedState[streamIDS[index]].videoVisible);
+    
+                    if (e.source == frames[index].contentWindow){
+                        if (e.data.streamID != undefined){
+                            streamIDS[index] = String(e.data.streamID);
                         }
-                        catch{streamIDS[index] = ''}
+                        else{
+                            open_room[index] = true;
                         }
-                }
-                if (content_win == open_room[0]){
-                    content_win = !open_room[0];
-                    if (content_win){
-                        camera_setting = 'camera_window_small';
-                        frames[0].style.visibility = 'visible';
+                        if ((e.data.streamID == undefined) && 
+                                (streamIDS[index] != undefined) && (streamIDS[index] != '')){
+                            try{
+                                open_room[index] = !(e.data.detailedState[streamIDS[index]].videoVisible);
+                            }
+                            catch{streamIDS[index] = ''}
+                            }
                     }
-                    else{
-                        camera_setting = 'camera_window_big';
-                        frames[0].style.visibility = 'hidden';
+                    if (content_win == open_room[0]){
+                        content_win = !open_room[0];
+                        if (content_win){
+                            camera_setting = 'camera_window_small';
+                            frames[0].style.visibility = 'visible';
+                        }
+                        else{
+                            camera_setting = 'camera_window_big';
+                            frames[0].style.visibility = 'hidden';
+                        }
+                        for(let i4 = 1;i4 < 5; i4++){
+                            frames[i4].className = camera_setting;
+                        }
+    
                     }
-                    for(let i4 = 1;i4 < 5; i4++){
-                        frames[i4].className = camera_setting;
-                    }
+                    else{return}
+                });
+    };
 
-                }
-                else{return}
-            });
-
-            function join(){
-                for (let i5 = 1; i5 < 5;i5++){
-                    if (open_room[i5] == true){
-                        window.open(join_links[i5], '_blank').focus();
-                        frames[i5].contentWindow.postMessage({
-                            "mute": true
-                        }, '*');
-                        i5 = 5;
-                    }
-                }
-            };
-            function add_content(){
-                    if (open_room[0] == true){
-                        window.open(join_links[0], '_blank').focus();
-                        frames[0].contentWindow.postMessage({
-                            "mute": true
-                        }, '*');
-                    }
-            };
 
 </script>
