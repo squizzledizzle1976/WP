@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<style>
+    @import url(
+        'https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap'
+        );
+    :root {
+        color-scheme: dark;
+    }
+
+    html {
+        overscroll-behavior: none;
+        background-color: black;
+    }
+
+    body {
+        overscroll-behavior: none;
+        background-color: black;
+    }
+    .content_window {
+        border-style: none;
+        width: 100%;
+        max-width: 124.5vh;
+        max-height: 70vh;
+        aspect-ratio: 16/9;
+        margin-bottom: 0%;
+    }
+
+    .camera_window_xsmall {
+        border-style: none;
+        width: calc(19vw);
+        aspect-ratio: 16/9;
+    }
+    #overlay {
+        position: fixed;
+        display: block;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    #overlay_text{
+        text-align: center;
+        font-family:montserrat,sans-serif;
+        text-transform: uppercase;
+        padding: 10px;
+        border-radius: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 40px;
+        color: black;
+        background-color: #60c86a;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+    }
+
+</style>
+
+<body>
+<div id="overlay" onclick="load()">
+    <div id="overlay_text">Load Watch Party</div>
+</div>
+
+<div id="camera_div" style="text-align: center;"></div>
+<div id="content_div" style="text-align: center;"></div>
+
+
+</body>
+
+<script>
+    id = 'https://input.mattsquireproductions.com?cover&916&scene&room=cerberus_broadcast_'
+    var frame_links = [];
+    for (let i2 = 0; i2 < 20; i2++){
+        frame_links[i2] = id + String(i2 + 1)
+    }
+
+    const frames = [];
+    for (let i1 = 0; i1 < 20; i1++) {
+        frames[i1] = document.createElement("iframe");
+        frames[i1].allow = "autoplay;fullscreen;picture-in-picture;"
+        frames[i1].src = frame_links[i1];
+        frames[i1].className = 'camera_window_xsmall';
+        document.getElementById('camera_div').appendChild(frames[i1]);
+    }
+        document.getElementById("overlay").style.display = "block";
+
+        function load() {
+            document.getElementById("overlay").style.display = "none";
+            for (let i6 = 0; i6 < 5; i6++){
+                frames[i6].contentWindow.postMessage({
+                            "reload": true
+                        }, '*');
+            }
+        }
+</script>
