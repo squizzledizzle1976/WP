@@ -71,7 +71,35 @@
         transform: translate(-50%,-50%);
         -ms-transform: translate(-50%,-50%);
     }
+
+    #confirm_join {
+        position: fixed;
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 2;
+    }
     
+    #confirm_text{
+        text-align: center;
+        font-family:montserrat,sans-serif;
+        text-transform: uppercase;
+        padding: 10px;
+        border-radius: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 25px;
+        color: black;
+        background-color: #60c86a;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+    }
 
     #password_box {
         position: fixed;
@@ -129,6 +157,18 @@
         background-color: #60c86a;
         padding: 8px;
         font-size: 30px;
+        text-transform: uppercase;
+        border-style: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 2%;
+    }
+    .common_button_2{
+        font-family:montserrat;
+        background-color: black;
+        color: #60c86a;
+        padding: 8px;
+        font-size: 25px;
         text-transform: uppercase;
         border-style: none;
         border-radius: 10px;
@@ -207,7 +247,7 @@
 
 <div style="text-align: center; margin: 0 auto; display: none;" id="top_buttons">
     
-<button onclick="join()" id="join_button"
+<button onclick="try_join()" id="join_button"
 style="text-align: center; background-color: #60c86a; color: black;
     font-size: 24px; margin: 0 auto; border-style: none;
     font-family:montserrat,sans-serif; border-radius: 10px;
@@ -231,6 +271,15 @@ style="text-align: center; background-color: #60c86a; color: black;
         margin-bottom: 2%; margin-top: 2%;margin-left: 2%;text-transform: uppercase;"
         >Invite</button>
 
+</div>
+
+<div id="confirm_join">
+    <div id="confirm_text">Rejoin Watch Party?
+        <br>
+        <button class="common_button_2" onclick="join()">Yes</button>
+        <button class="common_button_2" onclick="cancel_join()">No</button>
+    </div>
+    
 </div>
 
 <div id="camera_div" style="text-align: center;"></div>
@@ -278,6 +327,7 @@ style="text-align: center; background-color: #60c86a; color: black;
         participant_view + id + "_4"];
 
     const frames = [];
+    var joined_room = null;
 
     if (id.length >= 8){
         enter_listener = false;
@@ -341,9 +391,27 @@ style="text-align: center; background-color: #60c86a; color: black;
             }
     };
 
+    function try_join(){
+        if (joined_room == null){
+            join();
+        }
+        else{document.getElementById('confirm_join').style.display = 'block'}
+    }
+
+    function cancel_join(){
+        document.getElementById('confirm_join').style.display = 'none';
+    }
+
     function join(){
+        document.getElementById('confirm_join').style.display = 'none';
+        if (joined_room != null){
+            frames[joined_room].contentWindow.postMessage({
+                        "mute": false
+                    }, '*');
+        }
         for (let i5 = 1; i5 < 5;i5++){
             if (open_room[i5] == true){
+                joined_room = i5;
                 window.open(join_links[i5], '_blank').focus();
                 frames[i5].contentWindow.postMessage({
                     "mute": true
@@ -401,7 +469,6 @@ style="text-align: center; background-color: #60c86a; color: black;
     };
 
     function load_frames() {
-    
         join_links = [
             content_join + id + "_0",
             participant_join + id + "_1",
