@@ -28657,9 +28657,9 @@ async function requestBasicPermissions(constraint = {video: true, audio: true}, 
 			timerBasicCheck = setTimeout(function() {
 				if (!(session.cleanOutput)) {
 					if (session.mobile){
-						warnUser("Notice: Camera timed out\n\nDid you accept the camera permissions?\n\nThis error may also appear if you are in a phone call or another app is already using the camera or microphone.");
+						warnUser("Notice: Did you accept the camera permissions?\n\nThis error may also appear if you are in a phone call or another app is already using the camera or microphone.");
 					} else {
-						warnUser("Camera Access Request Timed Out\nDid you accept camera permissions? Please do so first.\n\nOtherwise, do you have NDI Tools installed? Maybe try uninstalling NDI tools.\n\nPlease also ensure that your camera and audio devices are correctly connected and not already in use. You may also need to refresh the page.");
+						warnUser("Did you accept camera permissions? Please do so first.\n\nPlease also ensure that your camera and audio devices are correctly connected. You may also need to refresh the page.");
 					}
 				}
 			}, 10000);
