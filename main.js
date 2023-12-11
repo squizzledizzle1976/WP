@@ -3007,9 +3007,6 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 							if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
 								session.sink = deviceInfos[i].deviceId;
 								log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
-								
-								//[V1] bug hunt
-								alert(session.outputDevice)
 								break;
 							}
 						}
