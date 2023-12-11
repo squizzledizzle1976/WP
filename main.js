@@ -2954,35 +2954,35 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 	}
 
 	// [V1] make URL Param 'sqclock' that specifies a protocol for a Squire Clock connection
-	if (urlParams.has('sqclock')) {
-		session.outputDevice = String("squireinput") || null;
+	// if (urlParams.has('sqclock')) {
+	// 	session.outputDevice = String("squireinput") || null;
 		
-		if (session.outputDevice) {
-			session.outputDevice = session.outputDevice.toLowerCase().replace(/[\W]+/g, "_");
-		} else {
-			session.outputDevice = null;
-			getById("headphonesDiv3").style.display = "none"; // 
-		}
+	// 	if (session.outputDevice) {
+	// 		session.outputDevice = session.outputDevice.toLowerCase().replace(/[\W]+/g, "_");
+	// 	} else {
+	// 		session.outputDevice = null;
+	// 		getById("headphonesDiv3").style.display = "none"; // 
+	// 	}
 
-		if (session.outputDevice) {
-			try {
-				enumerateDevices().then(function(deviceInfos) {
-					for (let i = 0; i !== deviceInfos.length; ++i) {
-						if (deviceInfos[i].kind === 'audiooutput') {
-							if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
-								session.sink = deviceInfos[i].deviceId;
-								log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
-								break;
-							}
-						}
-					}
-				});
-			} catch (e) {}
-		}
+	// 	if (session.outputDevice) {
+	// 		try {
+	// 			enumerateDevices().then(function(deviceInfos) {
+	// 				for (let i = 0; i !== deviceInfos.length; ++i) {
+	// 					if (deviceInfos[i].kind === 'audiooutput') {
+	// 						if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
+	// 							session.sink = deviceInfos[i].deviceId;
+	// 							log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
+	// 							break;
+	// 						}
+	// 					}
+	// 				}
+	// 			});
+	// 		} catch (e) {}
+	// 	}
 		
-		getById("headphonesDiv").style.display = "none";
-		getById("headphonesDiv2").style.display = "none";
-	}
+	// 	getById("headphonesDiv").style.display = "none";
+	// 	getById("headphonesDiv2").style.display = "none";
+	// }
 	//end [V1]
 	
 	
