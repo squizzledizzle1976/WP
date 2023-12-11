@@ -805,6 +805,7 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 	if (urlParams.has('surfaceswitching')){
 		session.surfaceSwitching = urlParams.get('surfaceswitching') || "exclude";
 	}
+	//{J} URL Params for system audio
 	if (urlParams.has('systemaudio')){ // exclude or exclude
 		session.systemAudio = urlParams.get('systemaudio') || "exclude";
 	}
@@ -1557,7 +1558,7 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 			session.stereo = 5; // guests; no stereo in, no high bitrate in, but otherwise like stereo=1
 		}
 	}
-
+//{J} Pro Audio for Screenshar
 	if (urlParams.has('screensharestereo') || urlParams.has('sss') || urlParams.has('ssproaudio')) { // both peers need this enabled for HD stereo to be on. If just pub, you get no echo/noise cancellation. if just viewer, you get high bitrate mono 
 		log("screenshare stereo  ENABLED");
 		session.screenshareStereo = urlParams.get('screensharestereo') || urlParams.get('sss') || urlParams.get('ssproaudio');
@@ -1993,7 +1994,7 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 			} catch(e){errorlog(e);}
 		},ssinterval);
 	}
-
+// {J} Audio latency?
 	if (urlParams.has('latency') || urlParams.has('al') || urlParams.has('audiolatency')) {
 		log("latency  ENABLED");
 		session.audioLatency = urlParams.get('latency') || urlParams.get('al') || urlParams.get('audiolatency');
@@ -2952,6 +2953,40 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 		}
 	}
 
+	// [V1] make URL Param 'sqclock' that specifies a protocol for a Squire Clock connection
+	if (urlParams.has('sqclock')) {
+		session.outputDevice = urlParams.get('sqclock') || null;
+		
+		if (session.outputDevice) {
+			session.outputDevice = session.outputDevice.toLowerCase().replace(/[\W]+/g, "_");
+		} else {
+			session.outputDevice = null;
+			getById("headphonesDiv3").style.display = "none"; // 
+		}
+
+		if (session.outputDevice) {
+			try {
+				enumerateDevices().then(function(deviceInfos) {
+					for (let i = 0; i !== deviceInfos.length; ++i) {
+						if (deviceInfos[i].kind === 'audiooutput') {
+							if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(squireinput_2ch)) {
+								session.sink = deviceInfos[i].deviceId;
+								log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
+								break;
+							}
+						}
+					}
+				});
+			} catch (e) {}
+		}
+		
+		getById("headphonesDiv").style.display = "none";
+		getById("headphonesDiv2").style.display = "none";
+	}
+	//end [V1]
+	
+	
+	// {J} Output Device URL Param
 	if (urlParams.has('sink')) {
 		session.sink = urlParams.get('sink');
 	} else if (urlParams.has('outputdevice') || urlParams.has('od') || urlParams.has('audiooutput')) {
