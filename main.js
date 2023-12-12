@@ -2952,6 +2952,7 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 		}
 	}
 
+	//[V1] audiooutput URL Param
 	if (urlParams.has('sink')) {
 		session.sink = urlParams.get('sink');
 	} else if (urlParams.has('outputdevice') || urlParams.has('od') || urlParams.has('audiooutput')) {
