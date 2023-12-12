@@ -2968,10 +2968,12 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 			try {
 				enumerateDevices().then(function(deviceInfos) {
 					for (let i = 0; i !== deviceInfos.length; ++i) {
-						if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
-							session.sink = deviceInfos[i].deviceId;
-							log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
-							break;
+						if (deviceInfos[i].kind === 'audiooutput') {
+							if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
+								session.sink = deviceInfos[i].deviceId;
+								log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
+								break;
+							}
 						}
 					}
 				});
