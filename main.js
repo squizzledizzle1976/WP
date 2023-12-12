@@ -2955,7 +2955,7 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 
 	// [V1] make URL Param 'sqclock' that specifies a protocol for a Squire Clock connection
 	if (urlParams.has('sqclock')) {
-		session.outputDevice = String("squireinput") || null;
+		session.outputDevice = String("squireinput_2ch") || null;
 		
 		if (session.outputDevice) {
 			session.outputDevice = session.outputDevice.toLowerCase().replace(/[\W]+/g, "_");
@@ -2968,12 +2968,10 @@ async function main(){ // main asyncronous thread; mostly initializes the user s
 			try {
 				enumerateDevices().then(function(deviceInfos) {
 					for (let i = 0; i !== deviceInfos.length; ++i) {
-						if (deviceInfos[i].kind === 'audiooutput') {
-							if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
-								session.sink = deviceInfos[i].deviceId;
-								log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
-								break;
-							}
+						if (deviceInfos[i].label.replace(/[\W]+/g, "_").toLowerCase().includes(session.outputDevice)) {
+							session.sink = deviceInfos[i].deviceId;
+							log("AUDIO OUT DEVICE: " + deviceInfos[i].deviceId);
+							break;
 						}
 					}
 				});
