@@ -292,10 +292,11 @@ style="text-align: center; background-color: #60c86a; color: black;
     var stream_source = urlParams.get('src');
     var stream_source_id = urlParams.get('src_id');
     var twitch_frame = document.createElement('iframe')
-    twitch_frame.src = "https://player.twitch.tv/?parent=input.mattsquireproductions.com&muted=false&channel=" + stream_source_id
-    twitch_frame.height = '500px'
-    twitch_frame.width = '500px'
-    twitch_frame.allowFullscreen
+    twitch_frame.src = "https://player.twitch.tv/?parent=input.mattsquireproductions.com&muted=false&channel=" + stream_source_id;
+    twitch_frame.height = '500px';
+    twitch_frame.width = '500px';
+    twitch_frame.style.pointerEvents = "none";
+    twitch_frame.allowFullscreen;
     document.getElementById('camera_div').appendChild(twitch_frame);
 
     
