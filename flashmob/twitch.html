@@ -295,9 +295,12 @@ style="text-align: center; background-color: #60c86a; color: black;
     twitch_frame.src = "https://player.twitch.tv/?parent=input.mattsquireproductions.com&muted=false&channel=" + stream_source_id;
     twitch_frame.height = '500px';
     twitch_frame.width = '500px';
-    twitch_frame.style.pointerEvents = "none";
     twitch_frame.allowFullscreen;
     document.getElementById('camera_div').appendChild(twitch_frame);
+
+    setTimeout(() => {
+                twitch_frame.style.pointerEvents = "none";
+            }, 1000);
 
     
     var enter_listener = true;
