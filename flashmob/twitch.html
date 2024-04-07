@@ -275,11 +275,10 @@ style="text-align: center; background-color: #60c86a; color: black;
 </div>
 
 <div id="camera_div" style="text-align: center;"></div>
-<div id="content_div" style="text-align: center;"></div>
+<div id="content_div" style="pointer-events: none;text-align: center;"></div>
 </body>
 
 <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
-<div id="twitch_player_div" style="pointer-events: none;"></div>
 
 <script>
     setTimeout(() => {
@@ -290,20 +289,6 @@ style="text-align: center; background-color: #60c86a; color: black;
     const urlParams = new URLSearchParams(window.location.search);
     var id = urlParams.get('password');
     if (id == null){id = 0}
-
-    // set up Twitch embed
-    var stream_source = urlParams.get('src');
-    var stream_source_id = urlParams.get('src_id');
-    var options = {
-        width: "500px",
-        height: "500px",
-        channel: stream_source_id,
-        // only needed if your site is also embedded on embed.example.com and othersite.example.com
-        parent: ["input.mattsquireproductions.com"]
-        };
-    var player = new Twitch.Player("twitch_player_div", options);
-    player.setVolume(0.5);
-
     
     var enter_listener = true;
     var link = "https://input.mattsquireproductions.com/flashmob/?password=";
@@ -490,12 +475,12 @@ style="text-align: center; background-color: #60c86a; color: black;
             participant_view + id + "_3",
             participant_view + id + "_4"];
     
-        for (let i1 = 0; i1 < 5; i1++) {
+        for (let i1 = 1; i1 < 5; i1++) {
             frames[i1] = document.createElement("iframe");
             frames[i1].allow = "autoplay;fullscreen;picture-in-picture;"
             frames[i1].src = frame_links[i1];
             if (i1 != 0){
-                frames[i1].className = 'camera_window_big';
+                frames[i1].className = 'camera_window_small';
                 document.getElementById('camera_div').appendChild(frames[i1]);
             }
             else{
@@ -503,12 +488,19 @@ style="text-align: center; background-color: #60c86a; color: black;
                 document.getElementById('content_div').appendChild(frames[i1]);
             }
         }
-            frames[0].style.visibility = 'hidden';
-            setInterval(function(){
-                for (let i2 = 0; i2 < 5; i2++) {
-                    frames[i2].contentWindow.postMessage({"getDetailedState":true}, "*");
-                    }
-                },1000);
+            // set up Twitch embed
+            var stream_source = urlParams.get('src');
+            var stream_source_id = urlParams.get('src_id');
+            var options = {
+                width: "500px",
+                height: "500px",
+                channel: stream_source_id,
+                // only needed if your site is also embedded on embed.example.com and othersite.example.com
+                parent: ["input.mattsquireproductions.com"]
+                };
+            var player = new Twitch.Player("content_div", options);
+            player.setVolume(0.5);
+            player.className = 'content_window'
             
             
             window.addEventListener("message", (e) => {
@@ -531,21 +523,21 @@ style="text-align: center; background-color: #60c86a; color: black;
                             catch{streamIDS[index] = ''}
                             }
                     }
-                    if (content_win == open_room[0]){
-                        content_win = !open_room[0];
-                        if (content_win){
-                            camera_setting = 'camera_window_small';
-                            frames[0].style.visibility = 'visible';
-                        }
-                        else{
-                            camera_setting = 'camera_window_big';
-                            frames[0].style.visibility = 'hidden';
-                        }
-                        for(let i4 = 1;i4 < 5; i4++){
-                            frames[i4].className = camera_setting;
-                        }
+                    // if (content_win == open_room[0]){
+                    //     content_win = !open_room[0];
+                    //     if (content_win){
+                    //         camera_setting = 'camera_window_small';
+                    //         frames[0].style.visibility = 'visible';
+                    //     }
+                    //     else{
+                    //         camera_setting = 'camera_window_big';
+                    //         frames[0].style.visibility = 'hidden';
+                    //     }
+                    //     for(let i4 = 1;i4 < 5; i4++){
+                    //         frames[i4].className = camera_setting;
+                    //     }
     
-                    }
+                    // }
                     else{return}
                 });
     };
